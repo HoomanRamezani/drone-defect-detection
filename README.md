@@ -3,6 +3,9 @@ This repo has code related to the drone-defect-detection Project repository. The
 
 Model detects surface defects with accuracy of 96%, well balanced for sensitivity / precision. Its architecture is now expanded to include a convolutional-RNN to capture temporal information between video frames. It features YOLO object detection, LSTM, automated hyperparameter tuning, and GPU optimization.
 
+![](/imgs/abr.png)
+
+
 # Project Setup
 To get started with this project, you will need the following:
 ```
