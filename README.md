@@ -40,5 +40,5 @@ You can monitor the training progress via TensorBoard:
 tensorboard --logdir=path/to/log-files
 ```
 
-Evaluation
+## Evaluation
 After training, evaluate your model's performance using the evaluate.py script, ensuring that it meets our target accuracy of 96% for image classification and object detection tasks.
