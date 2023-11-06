@@ -42,3 +42,6 @@ tensorboard --logdir=path/to/log-files
 
 ## Evaluation
 After training, evaluate your model's performance using the evaluate.py script, ensuring that it meets our target accuracy of 96% for image classification and object detection tasks.
+```
+python evaluate.py --model_dir path/to/saved_model --data_dir path/to/evaluation_data --batch_size 32
+```
