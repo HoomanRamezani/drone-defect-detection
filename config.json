@@ -1,6 +1,6 @@
 {
   "model_params": {
-    "architecture": "example-net",
+    "architecture": "abr-net",
     "input_shape": [256, 256, 3],
     "output_activation": "sigmoid",
     "learning_rate": 0.001,

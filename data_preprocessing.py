@@ -1,4 +1,15 @@
 def create_tf_example(tfrecord_data):
+    """
+    Creates a TensorFlow SequenceExample object from the provided tfrecord data.
+    
+    The function iterates through tfrecord_data to encode images, labels, and filenames
+    into a SequenceExample format, which is then written to a TFRecord file. The function
+    continues this process until all data is processed or tfrecord_data is empty.
+    
+    Args:
+        tfrecord_data (list): A list of tuples containing file paths to images and their 
+                              corresponding labels.
+    """
 
     while 1:
         print(len(tfrecord_data))
@@ -34,8 +45,28 @@ def create_tf_example(tfrecord_data):
         write_tffile(tf_example)
 
 
+# -------------------------------------------------------------------------------
+
 
 def parse_tfrecord(size=256, data_aug=True, file_name=False):
+    """
+    Returns a function that parses TFRecord entries into training data.
+
+    This function creates another function that can be used to map over a dataset. It
+    decodes the JPEG images, applies resizing, and optionally applies data augmentation
+    techniques such as random flips, rotations, brightness, saturation, and hue adjustments.
+    
+    Args:
+        size (int): Target size to resize images.
+        data_aug (bool): Flag to determine whether data augmentation should be applied.
+        file_name (bool): Flag to determine whether file names should be returned 
+                          alongside the images and labels.
+
+    Returns:
+        function: A function that takes a serialized TFRecord and returns either a tuple
+                  of (image, label) or (image, label, filename) depending on the file_name flag.
+    """
+
     def func(tfrecord):
         x = tf.io.parse_example(tfrecord, IMAGE_FEATURE_MAP)
         x_train = tf.image.decode_jpeg(x["image/example"], channels=3)
@@ -60,3 +91,53 @@ def parse_tfrecord(size=256, data_aug=True, file_name=False):
         else:
             return img, class_label.values
         return func
+
+
+def dataset_setup(dataset_type="train", data_aug=True):
+    """
+    Sets up a TensorFlow dataset from TFRecord files for training or validation.
+
+    This function creates a TFRecordDataset from files within a specific directory,
+    applies shuffling, repeats for a number of epochs, maps the data through the 
+    parse_tfrecord function, batches the data, and prepares it for training by prefetching.
+    
+    Args:
+        dataset_type (str): A string indicating the type of dataset to setup, e.g., "train".
+        data_aug (bool): Flag to determine whether data augmentation should be applied.
+
+    Returns:
+        tuple: A tuple containing the dataset and the raw TFRecordDataset. The former is
+               batched and preprocessed, ready for training, while the latter is the 
+               unprocessed TFRecordDataset.
+    """
+        
+    # Create a list of all the training tfrecord files
+    files = []
+    tfrecord_fnames = os.listdir(
+        os.path.join(args.dataset_dir, dataset_type, "tfrecords")
+    )
+    for i in range(1, len(tfrecord_fnames) + 1):
+        files.append(
+            os.path.join(
+                args.dataset_dir,
+                dataset_type,
+                "tfrecords/bp-%s-%s.tfrecord" % (dataset_type, str(i).zfill(3)),
+            )
+        )
+    # Create training dataset and add mapping function to parse through tfrecord files
+    # in order to generate training input and labels with online data augmentation
+    dataset = tf.data.TFRecordDataset(
+        files, num_parallel_reads=6, buffer_size=512 * 1024
+    )
+    data = (
+        dataset.shuffle(args.batch_size * 128)
+        .repeat(args.epochs)
+        .map(
+            parse_tfrecord(size=IMG_HEIGHT, data_aug=data_aug),
+            deterministic=True,
+            num_parallel_calls=4,
+        )
+        .batch(args.batch_size, drop_remainder=True)
+        .prefetch(8)
+    )
+    return data, dataset

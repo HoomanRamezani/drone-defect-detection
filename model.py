@@ -1,3 +1,4 @@
+
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers import (
@@ -29,6 +30,10 @@ def ConvLayer(
     l2_reg=0.0005,
     name="layer",
 ):
+    """
+    Apply a convolution layer to the input tensor 'x' with L2 regularization and optional 
+    batch normalization.
+    """
 
     x = Conv2D(
         filters=filters,
@@ -57,6 +62,11 @@ def ConvLayerAlternate(
     batch_norm=True,
     l2_reg=0.0005,
 ):
+    """
+    An alternate version of the ConvLayer function with different batch normalization 
+    momentum and an option for 'valid' padding with adjusted padding.
+    """
+
     func = {
         "relu": ReLU(),
     }
@@ -78,6 +88,7 @@ def ConvLayerAlternate(
         x = ReLU(x)
 
     return x
+
 
 def NeuralNetwork(
     name="example",
@@ -171,4 +182,3 @@ def NeuralNetwork(
 
     model = tf.keras.Model(inputs, activate, name=name)
     return layers, inputs, activate, model
-
