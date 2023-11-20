@@ -1,5 +1,5 @@
 # drone-defect-detection
-This repo has code related to the drone-defect-detection Project repository. The project's goal is to develop an embedded video frame-classification model that can accurately classify surface defects. The model is lightweight and capable of running on edge devices on-device. To overcome the challenge of limited real-world data, a photo-realistic simulation using Unreal Engine and harnessed OpenCV for synthetic data generation. 
+This repo has code related to the drone-defect-detection Project repository. It is an embedded video frame-classification model that can accurately classify surface defects. The model is lightweight and capable of running on edge devices on-device. To overcome the challenge of limited real-world data, a photo-realistic simulation using Unreal Engine and harnessed OpenCV for synthetic data generation. 
 
 Model detects surface defects with accuracy of 96%, well balanced for sensitivity / precision. Its architecture is now expanded to include a convolutional-RNN to capture temporal information between video frames. It features YOLO object detection, LSTM, automated hyperparameter tuning, and GPU optimization.
 
